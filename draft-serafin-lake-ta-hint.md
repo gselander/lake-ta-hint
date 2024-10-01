@@ -1,20 +1,16 @@
 ---
 title: "Trust Anchor Hint in EDHOC"
 abbrev: "TA Hint in EDHOC"
-category: info
+category: std
 
 docname: draft-serafin-lake-ta-hint-latest
-submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
-number:
-date:
+submissiontype: IETF
 consensus: true
 v: 3
 area: "Security"
 workgroup: "Lightweight Authenticated Key Exchange"
-keyword:
- - next generation
- - unicorn
- - sparkling distributed ledger
+kw: Internet-Draft
+coding: utf-8
 venue:
   group: "Lightweight Authenticated Key Exchange"
   type: "Working Group"
@@ -24,15 +20,25 @@ venue:
   latest: "https://gselander.github.io/lake-ta-hint/draft-serafin-lake-ta-hint.html"
 
 author:
- -
-    fullname: "Göran Selander"
-    organization: Your Organization Here
-    email: "goran.selander@ericsson.com"
+-
+    ins: M. Serafin
+    name: Marek Serafin
+    organization: ASSA ABLOY
+    email: marek.serafin@assaabloy.com
+-
+    ins: G. Selander
+    name: Göran Selander
+    org: Ericsson
+    email: goran.selander@ericsson.com
 
 normative:
+  RFC2119:
+  RFC8174:
 
 informative:
 
+entity:
+  SELF: "[RFC-XXXX]"
 
 --- abstract
 
@@ -46,7 +52,7 @@ TODO Abstract
 TODO Introduction
 
 
-# Conventions and Definitions
+## Terminology ## {#terminology}
 
 {::boilerplate bcp14-tagged}
 
