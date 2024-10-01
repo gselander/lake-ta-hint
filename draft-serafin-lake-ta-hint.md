@@ -50,11 +50,19 @@ TODO Abstract
 
 # Introduction
 
-The lightweight authenticated kay exchange protocol Ephemeral Diffie-Hellman Over COSE (EDHOC) {{RFC9528}} allows the inclusion of authorization-related information in EDHOC protocol messages to streamline and secure communications. This information is included in External Authorization Data (EAD) message fields.
+Ephemeral Diffie-Hellman Over COSE (EDHOC) {{RFC9528}} is a  lightweight security handshake protocol with low processing and message overhead making it suitable for constrained devices and low-power networks.
 
-EAD can be included in any of the four EDHOC messages (EAD_1, EAD_2, EAD_3, EAD_4), providing flexibility and extensibility to the protocol. Its main purpose is to embed extra data directly into the key exchange process, reducing the need for additional message exchanges and simplifying the overall protocol flow.
+In addition to excuting the handshake protocol, authentication and authorization typically requires the validation of certificates and assertions using trust anchors, which may be pre-provisioned or established out-of-band. For this machinery to work, an endpoint thus needs to know and have credentials issued by a trust anchor of the other endpoint.
 
-One of the most important parts of EDHOC in the Device Communication Framework is the processing time, which is a key performance indicator. This processing time heavily depends on the credentials trust root validation. To optimize this on embedded devices, we aim to provide hints to the device regarding which trust root it should use to verify credentials sent in EDHOC messages 2 and 3 or to specify the order in which the trust roots should be used for the validation.
+Moreover, the validation of credentials against trust anchors is a significant contribution to the processing time in embedded devices, so it is desirable to provide hints to the device regarding which trust root it should use to verify credentials, or to specify the order in which the trust roots should be used for the validation.
+
+EDHOC allows the inclusion of authorization-related information in the External Authorization Data (EAD) message fields, see {{Section 3.8 of RFC9528}}. EAD can be included in any of the four EDHOC messages (EAD_1, EAD_2, EAD_3, EAD_4), providing flexibility and extensibility to the protocol. Its main purpose is to embed authorization-related information directly into the key exchange process, reducing the need for additional message exchanges and simplifying the overall protocol flow. Information about trust anchors is explicitly mentioned as one example, see {{Appendix E of RFC9528}}.
+
+The content of the EAD field may be used in the EDHOC processing of the message in which they are contained. For example, authentication-related information, like assertions and revocation information transported in EAD fields may provide input about trust anchors or validity of credentials relevant to the authentication processing.
+
+An EAD field may also be used for authorization related processing which can be interleaved with the authentication process and where information about trust anchors is needed.
+
+This specification defines an EAD item containing hints about trust anchors.
 
 
 ## Terminology ## {#terminology}
@@ -63,14 +71,9 @@ One of the most important parts of EDHOC in the Device Communication Framework i
 
 # EAD Item
 
-According to the appendix on the use of EAD, these fields can be used to influence the EDHOC message processing by providing hints about trust anchors.
-
-
-The content of the EAD field may be used in the EDHOC processing of the message in which they are contained. For example, authentication-related information, like assertions and revocation information, transported in EAD fields may provide input about trust anchors (...) relevant to the authentication processing.
-
 ## CDDL Specification
 
-The following CDDL defines the structure of our trust root hints for EAD:
+The following CDDL defines the EAD item for trust anchor hints:
 
 ~~~~~~~~~~~~~~~~~~~~ CDDL
 ead_dcf_trust = (
