@@ -19,11 +19,11 @@
 # Change the file extension to match the format (.xml for XML, etc...)
 #
 ###
-title: "TODO - Your title"
-abbrev: "TODO - Abbreviation"
+title: "Trust Anchor Hint in EDHOC"
+abbrev: "TA Hint in EDHOC"
 category: info
 
-docname: draft-todo-yourname-protocol-latest
+docname: draft-serafin-lake-ta-hint
 submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
 number:
 date:
