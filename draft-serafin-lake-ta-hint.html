@@ -1139,19 +1139,40 @@ svg :is([fill="white"], [fill^="#fff"]) {
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
-            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-ead-item" class="internal xref">EAD Item</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1">
+                <p id="section-toc.1-1.2.2.1.1" class="keepWithNext"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-cddl-specification" class="internal xref">CDDL Specification</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
-            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-processing" class="internal xref">Processing</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-example-scenario" class="internal xref">Example Scenario</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
-            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
-            <p id="section-toc.1-1.5.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-edhoc-external-authorizatio" class="internal xref">EDHOC External Authorization Data Registry</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -1162,7 +1183,9 @@ svg :is([fill="white"], [fill^="#fff"]) {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">TODO Introduction<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-1">The lightweight authenticated kay exchange protocol Ephemeral Diffie-Hellman Over COSE (EDHOC) <span>[<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> allows the inclusion of authorization-related information in EDHOC protocol messages to streamline and secure communications. This information is included in External Authorization Data (EAD) message fields.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">EAD can be included in any of the four EDHOC messages (EAD_1, EAD_2, EAD_3, EAD_4), providing flexibility and extensibility to the protocol. Its main purpose is to embed extra data directly into the key exchange process, reducing the need for additional message exchanges and simplifying the overall protocol flow.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">One of the most important parts of EDHOC in the Device Communication Framework is the processing time, which is a key performance indicator. This processing time heavily depends on the credentials trust root validation. To optimize this on embedded devices, we aim to provide hints to the device regarding which trust root it should use to verify credentials sent in EDHOC messages 2 and 3 or to specify the order in which the trust roots should be used for the validation.<a href="#section-1-3" class="pilcrow">¶</a></p>
 <div id="terminology">
 <section id="section-1.1">
         <h3 id="name-terminology">
@@ -1176,26 +1199,164 @@ appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">�
 </div>
 </section>
 </div>
-<div id="security-considerations">
+<div id="ead-item">
 <section id="section-2">
-      <h2 id="name-security-considerations">
-<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      <h2 id="name-ead-item">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-ead-item" class="section-name selfRef">EAD Item</a>
       </h2>
-<p id="section-2-1">TODO Security<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-1">According to the appendix on the use of EAD, these fields can be used to influence the EDHOC message processing by providing hints about trust anchors.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">The content of the EAD field may be used in the EDHOC processing of the message in which they are contained. For example, authentication-related information, like assertions and revocation information, transported in EAD fields may provide input about trust anchors (...) relevant to the authentication processing.<a href="#section-2-2" class="pilcrow">¶</a></p>
+<div id="cddl-specification">
+<section id="section-2.1">
+        <h3 id="name-cddl-specification">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-cddl-specification" class="section-name selfRef">CDDL Specification</a>
+        </h3>
+<p id="section-2.1-1">The following CDDL defines the structure of our trust root hints for EAD:<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<span id="name-cddl-model"></span><div id="fig-cddl-model">
+<figure id="figure-1">
+          <div class="alignLeft art-CDDL art-text artwork" id="section-2.1-2.1">
+<pre>
+ead_dcf_trust = (
+    ead_label: dcf-trust-ead-label,  ; A predefined constant that identifies this particular EAD structure
+    ead_value: bstr .cbor DCF_Trust_Hints ; The value is a byte string containing CBOR-encoded trust hints
+)
+DCF_Trust_Hints = (DCF_Trust_Hint / [2* DCF_Trust_Hint])
+; DCF_Trust_Hint definitions with one required and several optional implementations.
+;REQUIRED to implement:
+; A required trust hint type using 'kid' (Key ID).
+DCF_Trust_Hint //= (dcf-trust-type-kid, -24...23 / bstr)
+;OPTIONAL to implement:
+; An optional trust hint type using 'x5t' (X.509 CA/ICA Certificate SHA-1 thumbprint).
+DCF_Trust_Hint //= (dcf-trust-type-x5t, COSE_CertHash)
+; An optional trust hint type using 'x5u' (X.509 CA/ICA Certificate URL).
+DCF_Trust_Hint //= (dcf-trust-type-x5u, uri)
+; An optional trust hint type using 'c5t' (CBOR CA/ICA Certificate SHA-1 thumbprint).
+DCF_Trust_Hint //= (dcf-trust-type-c5t, COSE_CertHash)
+; An optional trust hint type using 'c5u' (CBOR CA/ICA Certificate URL).
+DCF_Trust_Hint //= (dcf-trust-type-c5u, uri)
+; An optional trust hint type using 'aeid', represented as a binary UUID.
+DCF_Trust_Hint //= (dcf-trust-type-aeid, buuid)
+; Trust type identifiers used to specify the type of trust hint in DCF_Trust_Hint.
+;REQUIRED to implement:
+; Identifier for 'kid' trust type.
+dcf-trust-type-kid = 1
+;OPTIONAL to implement:
+; Identifier for 'x5t' trust type.
+dcf-trust-type-x5t = 2
+; Identifier for 'x5u' trust type.
+dcf-trust-type-x5u = 3
+; Identifier for 'c5t' trust type.
+dcf-trust-type-c5t = 4
+; Identifier for 'c5u' trust type.
+dcf-trust-type-c5u = 5
+; Identifier for 'aeid' trust type.
+dcf-trust-type-aeid = 6
+; Defined in [RFC9360]
+COSE_CertHash = [
+    hashAlg: (int / tstr),  ; Hash algorithm identifier corresponding to the Value column of the algorithm
+registered in the "COSE Algorithms" registry.
+    hashValue: bstr         ; The hash value itself as a byte string.
+]
+; Binary UUID (universally unique identifier) tagged with specific CBOR tag to ensure proper encoding.
+buuid = #6.37(bstr)
+; The label for the EAD content in DCF trust context.
+dcf-trust-ead-label = {TBD}  ; The specific numeric value needs to be determined.
+</pre>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-cddl-model" class="selfRef">CDDL model</a>
+          </figcaption></figure>
+</div>
 </section>
 </div>
-<div id="iana-considerations">
+</section>
+</div>
+<div id="processing">
 <section id="section-3">
-      <h2 id="name-iana-considerations">
-<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      <h2 id="name-processing">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-processing" class="section-name selfRef">Processing</a>
       </h2>
-<p id="section-3-1">This document has no IANA actions.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-1">In Message 2, where the responder sends its credentials, the ead_dcf_trust format is used to include trust root hints in the EAD_2 field. This hint informs the initiator about which trust roots to prioritize when verifying the responder's credentials. For example, if the initiator’s trust store contains multiple CA/ICA certificates, the responder can include a hint indicating that the credentials should be verified using a specific trust root identified by kid, x5t, x5u, c5t, c5u or AEID.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">The hint structure is designed as follows:<a href="#section-3-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-3.1">
+          <p id="section-3-3.1.1">ead_label: A predefined constant that identifies this EAD structure.<a href="#section-3-3.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-3-3.2">
+          <p id="section-3-3.2.1">ead_value: A byte string containing CBOR-encoded trust hints (DCF_Trust_Hints).<a href="#section-3-3.2.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-3-4">DCF_Trust_Hints can contain one or more DCF_Trust_Hint entries, where each entry provides a hint on which trust root to use. The hints can include:<a href="#section-3-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-5.1">
+          <p id="section-3-5.1.1">kid: A key identifier for a specific trust root.<a href="#section-3-5.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-3-5.2">
+          <p id="section-3-5.2.1">x5t: A SHA-1 thumbprint of an X.509 certificate.<a href="#section-3-5.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-3-5.3">
+          <p id="section-3-5.3.1">x5u: A URL pointing to an X.509 certificate.<a href="#section-3-5.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-3-5.4">
+          <p id="section-3-5.4.1">c5t: A SHA-1 thumbprint of a CBOR certificate.<a href="#section-3-5.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-3-5.5">
+          <p id="section-3-5.5.1">c5u: A URL pointing to a CBOR certificate.<a href="#section-3-5.5.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-3-5.6">
+          <p id="section-3-5.6.1">aeid: A binary UUID representing an Assa Abloy Entity Identifier<a href="#section-3-5.6.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<div id="example-scenario">
+<section id="section-3.1">
+        <h3 id="name-example-scenario">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-example-scenario" class="section-name selfRef">Example Scenario</a>
+        </h3>
+<p id="section-3.1-1">Consider a scenario where the initiator trusts five CA/ICA certificates. The responder, when sending Message 2, knows that the initiator should use the trust root identified by kid=<code>edhoc-noc-ica-2</code> for verification. The responder includes this hint in EAD_2:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.1-2">
+<pre>
+{TBD}, &lt;&lt; 1, h'6564686F632D6E6F632D6963612D32' &gt;&gt;
+</pre><a href="#section-3.1-2" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-3">When the initiator receives Message 2, it will prioritize validating the responder’s credentials using the trust root associated with the provided kid.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.1-4">Important!<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+<p id="section-3.1-5">If this specific trust root validation fails or is not recognized, the initiator can fall back to the standard trust root validation process.<a href="#section-3.1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-4">
+      <h2 id="name-security-considerations">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-4-1">TODO Security<a href="#section-4-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="iana">
+<section id="section-5">
+      <h2 id="name-iana-considerations">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<div id="edhoc-external-authorization-data-registry">
+<section id="section-5.1">
+        <h3 id="name-edhoc-external-authorizatio">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-edhoc-external-authorizatio" class="section-name selfRef">EDHOC External Authorization Data Registry</a>
+        </h3>
+<p id="section-5.1-1">IANA is requested to register the following entry to the "EDHOC External Authorization Data" registry defined in Section 10.5 of <span>[<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.1-2">The ead_label = TBD and the ead_value define a Trust Anchor Hint transferred in an EAD item of an EDHOC message, with processing specified in Section TODO.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
+<p id="section-5.1-3">Name: Trust Anchor Hint<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+<p id="section-5.1-4">Label: TBD (from the unsigned range)<a href="#section-5.1-4" class="pilcrow">¶</a></p>
+<p id="section-5.1-5">Description: A Hint for determination of Trust Anchors used for verifying authentication credentials in EDHOC <span>[<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> or to support protocols making use of External Authorization Data of EDHOC.<a href="#section-5.1-5" class="pilcrow">¶</a></p>
+<p id="section-5.1-6">Reference: [RFC-XXXX]<a href="#section-5.1-6" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="sec-normative-references">
-<section id="section-4">
+<section id="section-6">
       <h2 id="name-normative-references">
-<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
       </h2>
 <dl class="references">
 <dt id="RFC2119">[RFC2119]</dt>
@@ -1203,8 +1364,12 @@ appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">�
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
-    <dd>
+      <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9528">[RFC9528]</dt>
+    <dd>
+<span class="refAuthor">Selander, G.</span>, <span class="refAuthor">Preuß Mattsson, J.</span>, and <span class="refAuthor">F. Palombini</span>, <span class="refTitle">"Ephemeral Diffie-Hellman Over COSE (EDHOC)"</span>, <span class="seriesInfo">RFC 9528</span>, <span class="seriesInfo">DOI 10.17487/RFC9528</span>, <time datetime="2024-03" class="refDate">March 2024</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9528">https://www.rfc-editor.org/rfc/rfc9528</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
