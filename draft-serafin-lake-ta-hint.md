@@ -1,6 +1,6 @@
 ---
-title: "Trust Anchor Hint in EDHOC"
-abbrev: "TA Hint in EDHOC"
+title: "Trust Anchor Hints in EDHOC"
+abbrev: "TA Hints in EDHOC"
 category: std
 
 docname: draft-serafin-lake-ta-hint-latest
@@ -33,6 +33,7 @@ author:
 
 normative:
   RFC2119:
+  RFC8126:
   RFC8174:
   RFC9528:
 
@@ -65,6 +66,20 @@ The primary motivation for this specification are TAs for authentication, typica
 
 # EAD Item
 
+{{table-edhoc-ta-hint}} provides a summary of the EDHOC Trust Anchor hints defined in this section.
+
+| Name                      | CBOR label | CBOR type   | Description                                   | Reference                        |
+| authentication_authority  | 1          | ta_hints    | Trust anchor of authentication credential     | [RFC-XXXX]                       |
+| attestation_verifier      | 2          | ta_hints    | Trust anchor of remote attestation verifier   | [RFC-XXXX]                       |
+| time_authority            | 3          | ta_hints    | Trust anchor of time server                   | [RFC-XXXX]                      |
+{: #table-edhoc-ta-hint title="EDHOC Trust Anchor hints" align="center"}
+
+* authentication\_authority: This parameter hints at which TA to use for authentication credentials used in EDHOC. The positive CBOR label (+1) in the EAD item indicates trust anchor to use for verifying the authentication credentials from the sender. The negative CBOR label (-1) indicates what trust anchors are supported by the sender and SHOULD be used in authentication credentials sent to the sender.
+* attestation\_verifier: TODO
+* time\_authority: TODO
+
+
+
 ## CDDL Specification
 
 The following CDDL defines the EAD item for Trust Anchor hints:
@@ -72,13 +87,17 @@ The following CDDL defines the EAD item for Trust Anchor hints:
 ~~~~~~~~~~~~~~~~~~~~ CDDL
 ead_ta_hint = (
     ead_label: ta_hint_ead_label,  ; A predefined constant that identifies this particular EAD structure
-    ead_value: bstr .cbor ta_hints ; The value is a byte string containing CBOR-encoded TA hints
+    ead_value: bstr .cbor ta_hint_map ; The value is a byte string containing CBOR-encoded TA hints
 )
-ta_hints = (ta_hint / [2* ta_hint])
+
+ta_hint_map = {
+  * int => ta_hints
+},
+ta_hints = (ta_hint / [2* ta_hint]),
 ; ta_hints definitions with one required and several optional implementations.
 ;REQUIRED to implement:
 ; A required TA hint type using 'kid' (Key ID).
-ta_hint //= (dta_hint-type-kid, -24...23 / bstr)
+ta_hint //= (ta_hint-type-kid, -24...23 / bstr)
 ;OPTIONAL to implement:
 ; An optional TA hint type using 'x5t' (X.509 CA/ICA Certificate SHA-1 thumbprint).
 ta_hint //= (ta_hint-type-x5t, COSE_CertHash)
@@ -121,14 +140,14 @@ ta_hint_ead_label = TBD
 
 # Processing
 
-In Message 2, where the responder sends its credentials, the ead_dcf_trust format is used to include trust root hints in the EAD_2 field. This hint informs the initiator about which trust roots to prioritize when verifying the responder's credentials. For example, if the initiator’s trust store contains multiple CA/ICA certificates, the responder can include a hint indicating that the credentials should be verified using a specific trust root identified by kid, x5t, x5u, c5t, c5u or AEID.
+In EDHOC message_2, where the responder sends its credentials, the ead_ta_hint format is used to include trust anchor hints in the EAD_2 field. This hint informs the initiator about which trust roots to prioritize when verifying the responder's credentials. For example, if the initiator’s trust store contains multiple CA/intermediate CA certificates, the responder can include a hint indicating that the credentials should be verified using a specific trust root identified by kid, x5t, x5u, c5t, c5u or UUID.
 
 The hint structure is designed as follows:
 
 * ead_label: A predefined constant that identifies this EAD structure.
-* ead_value: A byte string containing CBOR-encoded trust hints (DCF_Trust_Hints).
+* ead_value: A byte string containing CBOR map of CBOR encoded trust anchor hints (ta_hints).
 
-DCF_Trust_Hints can contain one or more DCF_Trust_Hint entries, where each entry provides a hint on which trust root to use. The hints can include:
+ta_hints can contain one or more ta_hint entries, where each entry provides a hint on which trust root to use. The hints can include:
 
 * kid: A key identifier for a specific trust root.
 * x5t: A SHA-1 thumbprint of an X.509 certificate.
@@ -138,18 +157,16 @@ DCF_Trust_Hints can contain one or more DCF_Trust_Hint entries, where each entry
 * aeid: A binary UUID representing an Assa Abloy Entity Identifier
 
 ## Example Scenario
-Consider a scenario where the initiator trusts five CA/ICA certificates. The responder, when sending Message 2, knows that the initiator should use the trust root identified by kid=`edhoc-noc-ica-2` for verification. The responder includes this hint in EAD_2:
+Consider a scenario where the initiator trusts five CA/intermediate certificates. The responder, when sending message_2, knows that the initiator should use the trust root identified by kid=`edhoc-noc-ica-2` for verification. The responder includes this hint in EAD_2:
 
 ~~~~~~~~~~~~~~~~~~~~
 {TBD}, << 1, h'6564686F632D6E6F632D6963612D32' >>
 ~~~~~~~~~~~~~~~~~~~~
 
-When the initiator receives Message 2, it will prioritize validating the responder’s credentials using the trust root associated with the provided kid.
+When the initiator receives message_2, it will prioritize validating the responder’s credentials using the trust root associated with the provided kid.
 
 
-Important!
-
-If this specific trust root validation fails or is not recognized, the initiator can fall back to the standard trust root validation process.
+If the validation against the trust anchors specified with the EAD item defined in this specification fails or is not recognized, then the receiver SHOULD fall back to the default validation process using available trust anchors. If all validation against trust anchors fail, then an error SHOULD be sent.
 
 
 # Security Considerations
@@ -172,6 +189,31 @@ Label: TBD (from the unsigned range)
 Description: A hint for determination of Trust Anchors used for verifying authentication credentials in EDHOC {{RFC9528}} or of other assertions used with External Authorization Data of EDHOC.
 
 Reference: [RFC-XXXX]
+
+## EDHOC Trust Anchor Hint Registry
+
+IANA has created a new registry entitled "EDHOC Trust Anchor Hint Registry". The registration procedure depends on the range of CBOR label values, following {{RFC8126}}. Guidelines for the experts are provided in TODO.
+
+The columns of the registry are:
+
+Name:
+    The name indicates the type of authority for which a hint is provided.
+
+CBOR Label:
+    The value to be used to identify this type of authority. Map key labels MUST be unique. The registry contains only positive integers, but negative integers MAY be used in the EAD item for the same type of authority but with separate semantics. Integer values between 1 and 23 are designated as Standards Track document required. Integer values from 24 to 255 are designated as Specification Required. Integer values from 256 to 65535 are designated as Expert Review. Integer values greater than 65535 are marked as Private Use.
+
+CBOR Type:
+    This field contains the CBOR type for the field.
+
+Description:
+    This field contains a brief description for the field.
+
+Reference:
+    This contains a pointer to the public specification for the field, if one exists.
+
+This registry has been initially populated by the values in {{table-edhoc-ta-hint}}. The Reference column for all of these entries is this document.
+
+
 
 --- back
 
