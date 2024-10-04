@@ -9,7 +9,7 @@ Expires: 7 April 2025                                           Ericsson
                                                           4 October 2024
 
 
-                       Trust Anchor Hint in EDHOC
+                      Trust Anchor Hints in EDHOC
                    draft-serafin-lake-ta-hint-latest
 
 Abstract
@@ -76,6 +76,7 @@ Table of Contents
    4.  Security Considerations
    5.  IANA Considerations
      5.1.  EDHOC External Authorization Data Registry
+     5.2.  EDHOC Trust Anchor Hint Registry
    6.  Normative References
    Acknowledgments
    Authors' Addresses
@@ -124,19 +125,57 @@ Table of Contents
 
 2.  EAD Item
 
+   Table 1 provides a summary of the EDHOC Trust Anchor hints defined in
+   this section.
+
+   +========================+=====+========+===============+==========+
+   |Name                    |CBOR |CBOR    |Description    |Reference |
+   |                        |label|type    |               |          |
+   +========================+=====+========+===============+==========+
+   |authentication_authority|1    |ta_hints|Trust anchor of|[RFC-XXXX]|
+   |                        |     |        |authentication |          |
+   |                        |     |        |credential     |          |
+   +------------------------+-----+--------+---------------+----------+
+   |attestation_verifier    |2    |ta_hints|Trust anchor of|[RFC-XXXX]|
+   |                        |     |        |remote         |          |
+   |                        |     |        |attestation    |          |
+   |                        |     |        |verifier       |          |
+   +------------------------+-----+--------+---------------+----------+
+   |time_authority          |3    |ta_hints|Trust anchor of|[RFC-XXXX]|
+   |                        |     |        |time server    |          |
+   +------------------------+-----+--------+---------------+----------+
+
+                    Table 1: EDHOC Trust Anchor hints
+
+   *  authentication_authority: This parameter hints at which TA to use
+      for authentication credentials used in EDHOC.  The positive CBOR
+      label (+1) in the EAD item indicates trust anchor to use for
+      verifying the authentication credentials from the sender.  The
+      negative CBOR label (-1) indicates what trust anchors are
+      supported by the sender and SHOULD be used in authentication
+      credentials sent to the sender.
+
+   *  attestation_verifier: TODO
+
+   *  time_authority: TODO
+
 2.1.  CDDL Specification
 
    The following CDDL defines the EAD item for Trust Anchor hints:
 
 ead_ta_hint = (
     ead_label: ta_hint_ead_label,  ; A predefined constant that identifies this particular EAD structure
-    ead_value: bstr .cbor ta_hints ; The value is a byte string containing CBOR-encoded TA hints
+    ead_value: bstr .cbor ta_hint_map ; The value is a byte string containing CBOR-encoded TA hints
 )
-ta_hints = (ta_hint / [2* ta_hint])
+
+ta_hint_map = {
+  * int => ta_hints
+},
+ta_hints = (ta_hint / [2* ta_hint]),
 ; ta_hints definitions with one required and several optional implementations.
 ;REQUIRED to implement:
 ; A required TA hint type using 'kid' (Key ID).
-ta_hint //= (dta_hint-type-kid, -24...23 / bstr)
+ta_hint //= (ta_hint-type-kid, -24...23 / bstr)
 ;OPTIONAL to implement:
 ; An optional TA hint type using 'x5t' (X.509 CA/ICA Certificate SHA-1 thumbprint).
 ta_hint //= (ta_hint-type-x5t, COSE_CertHash)
@@ -178,26 +217,25 @@ ta_hint_ead_label = TBD
 
 3.  Processing
 
-   In Message 2, where the responder sends its credentials, the
-   ead_dcf_trust format is used to include trust root hints in the EAD_2
+   In EDHOC message_2, where the responder sends its credentials, the
+   ead_ta_hint format is used to include trust anchor hints in the EAD_2
    field.  This hint informs the initiator about which trust roots to
    prioritize when verifying the responder's credentials.  For example,
-   if the initiator’s trust store contains multiple CA/ICA certificates,
-   the responder can include a hint indicating that the credentials
-   should be verified using a specific trust root identified by kid,
-   x5t, x5u, c5t, c5u or AEID.
+   if the initiator’s trust store contains multiple CA/intermediate CA
+   certificates, the responder can include a hint indicating that the
+   credentials should be verified using a specific trust root identified
+   by kid, x5t, x5u, c5t, c5u or UUID.
 
    The hint structure is designed as follows:
 
    *  ead_label: A predefined constant that identifies this EAD
       structure.
 
-   *  ead_value: A byte string containing CBOR-encoded trust hints
-      (DCF_Trust_Hints).
+   *  ead_value: A byte string containing CBOR map of CBOR encoded trust
+      anchor hints (ta_hints).
 
-   DCF_Trust_Hints can contain one or more DCF_Trust_Hint entries, where
-   each entry provides a hint on which trust root to use.  The hints can
-   include:
+   ta_hints can contain one or more ta_hint entries, where each entry
+   provides a hint on which trust root to use.  The hints can include:
 
    *  kid: A key identifier for a specific trust root.
 
@@ -213,22 +251,22 @@ ta_hint_ead_label = TBD
 
 3.1.  Example Scenario
 
-   Consider a scenario where the initiator trusts five CA/ICA
-   certificates.  The responder, when sending Message 2, knows that the
+   Consider a scenario where the initiator trusts five CA/intermediate
+   certificates.  The responder, when sending message_2, knows that the
    initiator should use the trust root identified by kid=edhoc-noc-ica-2
    for verification.  The responder includes this hint in EAD_2:
 
    {TBD}, << 1, h'6564686F632D6E6F632D6963612D32' >>
 
-   When the initiator receives Message 2, it will prioritize validating
+   When the initiator receives message_2, it will prioritize validating
    the responder’s credentials using the trust root associated with the
    provided kid.
 
-   Important!
-
-   If this specific trust root validation fails or is not recognized,
-   the initiator can fall back to the standard trust root validation
-   process.
+   If the validation against the trust anchors specified with the EAD
+   item defined in this specification fails or is not recognized, then
+   the receiver SHOULD fall back to the default validation process using
+   available trust anchors.  If all validation against trust anchors
+   fail, then an error SHOULD be sent.
 
 4.  Security Considerations
 
@@ -256,12 +294,48 @@ ta_hint_ead_label = TBD
 
    Reference: [RFC-XXXX]
 
+5.2.  EDHOC Trust Anchor Hint Registry
+
+   IANA has created a new registry entitled "EDHOC Trust Anchor Hint
+   Registry".  The registration procedure depends on the range of CBOR
+   label values, following [RFC8126].  Guidelines for the experts are
+   provided in TODO.
+
+   The columns of the registry are:
+
+   Name: The name indicates the type of authority for which a hint is
+   provided.
+
+   CBOR Label: The value to be used to identify this type of authority.
+   Map key labels MUST be unique.  The registry contains only positive
+   integers, but negative integers MAY be used in the EAD item for the
+   same type of authority but with separate semantics.  Integer values
+   between 1 and 23 are designated as Standards Track document required.
+   Integer values from 24 to 255 are designated as Specification
+   Required.  Integer values from 256 to 65535 are designated as Expert
+   Review.  Integer values greater than 65535 are marked as Private Use.
+
+   CBOR Type: This field contains the CBOR type for the field.
+
+   Description: This field contains a brief description for the field.
+
+   Reference: This contains a pointer to the public specification for
+   the field, if one exists.
+
+   This registry has been initially populated by the values in Table 1.
+   The Reference column for all of these entries is this document.
+
 6.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC8126]  Cotton, M., Leiba, B., and T. Narten, "Guidelines for
+              Writing an IANA Considerations Section in RFCs", BCP 26,
+              RFC 8126, DOI 10.17487/RFC8126, June 2017,
+              <https://www.rfc-editor.org/rfc/rfc8126>.
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,

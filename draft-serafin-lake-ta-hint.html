@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta content="Common,Latin" name="scripts">
 <meta content="initial-scale=1.0" name="viewport">
-<title>Trust Anchor Hint in EDHOC</title>
+<title>Trust Anchor Hints in EDHOC</title>
 <meta content="Marek Serafin" name="author">
 <meta content="Göran Selander" name="author">
 <meta content="
@@ -1024,7 +1024,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <table class="ears">
 <thead><tr>
 <td class="left">Internet-Draft</td>
-<td class="center">TA Hint in EDHOC</td>
+<td class="center">TA Hints in EDHOC</td>
 <td class="right">October 2024</td>
 </tr></thead>
 <tfoot><tr>
@@ -1061,7 +1061,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </dd>
 </dl>
 </div>
-<h1 id="title">Trust Anchor Hint in EDHOC</h1>
+<h1 id="title">Trust Anchor Hints in EDHOC</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
 <p id="section-abstract-1">TODO Abstract<a href="#section-abstract-1" class="pilcrow">¶</a></p>
@@ -1163,6 +1163,9 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
                 <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-edhoc-external-authorizatio" class="internal xref">EDHOC External Authorization Data Registry</a></p>
 </li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-edhoc-trust-anchor-hint-reg" class="internal xref">EDHOC Trust Anchor Hint Registry</a></p>
+</li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
@@ -1205,6 +1208,58 @@ appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">�
       <h2 id="name-ead-item">
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-ead-item" class="section-name selfRef">EAD Item</a>
       </h2>
+<p id="section-2-1"><a href="#_table-edhoc-ta-hint" class="auto internal xref">Table 1</a> provides a summary of the EDHOC Trust Anchor hints defined in this section.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<span id="name-edhoc-trust-anchor-hints"></span><div id="_table-edhoc-ta-hint">
+<table class="center" id="table-1">
+        <caption>
+<a href="#table-1" class="selfRef">Table 1</a>:
+<a href="#name-edhoc-trust-anchor-hints" class="selfRef">EDHOC Trust Anchor hints</a>
+        </caption>
+<thead>
+          <tr>
+            <th class="text-left" rowspan="1" colspan="1">Name</th>
+            <th class="text-left" rowspan="1" colspan="1">CBOR label</th>
+            <th class="text-left" rowspan="1" colspan="1">CBOR type</th>
+            <th class="text-left" rowspan="1" colspan="1">Description</th>
+            <th class="text-left" rowspan="1" colspan="1">Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">authentication_authority</td>
+            <td class="text-left" rowspan="1" colspan="1">1</td>
+            <td class="text-left" rowspan="1" colspan="1">ta_hints</td>
+            <td class="text-left" rowspan="1" colspan="1">Trust anchor of authentication credential</td>
+            <td class="text-left" rowspan="1" colspan="1">[RFC-XXXX]</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">attestation_verifier</td>
+            <td class="text-left" rowspan="1" colspan="1">2</td>
+            <td class="text-left" rowspan="1" colspan="1">ta_hints</td>
+            <td class="text-left" rowspan="1" colspan="1">Trust anchor of remote attestation verifier</td>
+            <td class="text-left" rowspan="1" colspan="1">[RFC-XXXX]</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">time_authority</td>
+            <td class="text-left" rowspan="1" colspan="1">3</td>
+            <td class="text-left" rowspan="1" colspan="1">ta_hints</td>
+            <td class="text-left" rowspan="1" colspan="1">Trust anchor of time server</td>
+            <td class="text-left" rowspan="1" colspan="1">[RFC-XXXX]</td>
+          </tr>
+        </tbody>
+      </table>
+</div>
+<ul class="normal">
+<li class="normal" id="section-2-3.1">
+          <p id="section-2-3.1.1">authentication_authority: This parameter hints at which TA to use for authentication credentials used in EDHOC. The positive CBOR label (+1) in the EAD item indicates trust anchor to use for verifying the authentication credentials from the sender. The negative CBOR label (-1) indicates what trust anchors are supported by the sender and <span class="bcp14">SHOULD</span> be used in authentication credentials sent to the sender.<a href="#section-2-3.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-3.2">
+          <p id="section-2-3.2.1">attestation_verifier: TODO<a href="#section-2-3.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-3.3">
+          <p id="section-2-3.3.1">time_authority: TODO<a href="#section-2-3.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
 <div id="cddl-specification">
 <section id="section-2.1">
         <h3 id="name-cddl-specification">
@@ -1217,13 +1272,17 @@ appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">�
 <pre>
 ead_ta_hint = (
     ead_label: ta_hint_ead_label,  ; A predefined constant that identifies this particular EAD structure
-    ead_value: bstr .cbor ta_hints ; The value is a byte string containing CBOR-encoded TA hints
+    ead_value: bstr .cbor ta_hint_map ; The value is a byte string containing CBOR-encoded TA hints
 )
-ta_hints = (ta_hint / [2* ta_hint])
+
+ta_hint_map = {
+  * int =&gt; ta_hints
+},
+ta_hints = (ta_hint / [2* ta_hint]),
 ; ta_hints definitions with one required and several optional implementations.
 ;REQUIRED to implement:
 ; A required TA hint type using 'kid' (Key ID).
-ta_hint //= (dta_hint-type-kid, -24...23 / bstr)
+ta_hint //= (ta_hint-type-kid, -24...23 / bstr)
 ;OPTIONAL to implement:
 ; An optional TA hint type using 'x5t' (X.509 CA/ICA Certificate SHA-1 thumbprint).
 ta_hint //= (ta_hint-type-x5t, COSE_CertHash)
@@ -1275,17 +1334,17 @@ ta_hint_ead_label = TBD
       <h2 id="name-processing">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-processing" class="section-name selfRef">Processing</a>
       </h2>
-<p id="section-3-1">In Message 2, where the responder sends its credentials, the ead_dcf_trust format is used to include trust root hints in the EAD_2 field. This hint informs the initiator about which trust roots to prioritize when verifying the responder's credentials. For example, if the initiator’s trust store contains multiple CA/ICA certificates, the responder can include a hint indicating that the credentials should be verified using a specific trust root identified by kid, x5t, x5u, c5t, c5u or AEID.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-1">In EDHOC message_2, where the responder sends its credentials, the ead_ta_hint format is used to include trust anchor hints in the EAD_2 field. This hint informs the initiator about which trust roots to prioritize when verifying the responder's credentials. For example, if the initiator’s trust store contains multiple CA/intermediate CA certificates, the responder can include a hint indicating that the credentials should be verified using a specific trust root identified by kid, x5t, x5u, c5t, c5u or UUID.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <p id="section-3-2">The hint structure is designed as follows:<a href="#section-3-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3-3.1">
           <p id="section-3-3.1.1">ead_label: A predefined constant that identifies this EAD structure.<a href="#section-3-3.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-3-3.2">
-          <p id="section-3-3.2.1">ead_value: A byte string containing CBOR-encoded trust hints (DCF_Trust_Hints).<a href="#section-3-3.2.1" class="pilcrow">¶</a></p>
+          <p id="section-3-3.2.1">ead_value: A byte string containing CBOR map of CBOR encoded trust anchor hints (ta_hints).<a href="#section-3-3.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-3-4">DCF_Trust_Hints can contain one or more DCF_Trust_Hint entries, where each entry provides a hint on which trust root to use. The hints can include:<a href="#section-3-4" class="pilcrow">¶</a></p>
+<p id="section-3-4">ta_hints can contain one or more ta_hint entries, where each entry provides a hint on which trust root to use. The hints can include:<a href="#section-3-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3-5.1">
           <p id="section-3-5.1.1">kid: A key identifier for a specific trust root.<a href="#section-3-5.1.1" class="pilcrow">¶</a></p>
@@ -1311,15 +1370,14 @@ ta_hint_ead_label = TBD
         <h3 id="name-example-scenario">
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-example-scenario" class="section-name selfRef">Example Scenario</a>
         </h3>
-<p id="section-3.1-1">Consider a scenario where the initiator trusts five CA/ICA certificates. The responder, when sending Message 2, knows that the initiator should use the trust root identified by kid=<code>edhoc-noc-ica-2</code> for verification. The responder includes this hint in EAD_2:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-1">Consider a scenario where the initiator trusts five CA/intermediate certificates. The responder, when sending message_2, knows that the initiator should use the trust root identified by kid=<code>edhoc-noc-ica-2</code> for verification. The responder includes this hint in EAD_2:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.1-2">
 <pre>
 {TBD}, &lt;&lt; 1, h'6564686F632D6E6F632D6963612D32' &gt;&gt;
 </pre><a href="#section-3.1-2" class="pilcrow">¶</a>
 </div>
-<p id="section-3.1-3">When the initiator receives Message 2, it will prioritize validating the responder’s credentials using the trust root associated with the provided kid.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
-<p id="section-3.1-4">Important!<a href="#section-3.1-4" class="pilcrow">¶</a></p>
-<p id="section-3.1-5">If this specific trust root validation fails or is not recognized, the initiator can fall back to the standard trust root validation process.<a href="#section-3.1-5" class="pilcrow">¶</a></p>
+<p id="section-3.1-3">When the initiator receives message_2, it will prioritize validating the responder’s credentials using the trust root associated with the provided kid.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.1-4">If the validation against the trust anchors specified with the EAD item defined in this specification fails or is not recognized, then the receiver <span class="bcp14">SHOULD</span> fall back to the default validation process using available trust anchors. If all validation against trust anchors fail, then an error <span class="bcp14">SHOULD</span> be sent.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1350,6 +1408,26 @@ ta_hint_ead_label = TBD
 <p id="section-5.1-6">Reference: [RFC-XXXX]<a href="#section-5.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
+<div id="edhoc-trust-anchor-hint-registry">
+<section id="section-5.2">
+        <h3 id="name-edhoc-trust-anchor-hint-reg">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-edhoc-trust-anchor-hint-reg" class="section-name selfRef">EDHOC Trust Anchor Hint Registry</a>
+        </h3>
+<p id="section-5.2-1">IANA has created a new registry entitled "EDHOC Trust Anchor Hint Registry". The registration procedure depends on the range of CBOR label values, following <span>[<a href="#RFC8126" class="cite xref">RFC8126</a>]</span>. Guidelines for the experts are provided in TODO.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<p id="section-5.2-2">The columns of the registry are:<a href="#section-5.2-2" class="pilcrow">¶</a></p>
+<p id="section-5.2-3">Name:
+    The name indicates the type of authority for which a hint is provided.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+<p id="section-5.2-4">CBOR Label:
+    The value to be used to identify this type of authority. Map key labels <span class="bcp14">MUST</span> be unique. The registry contains only positive integers, but negative integers <span class="bcp14">MAY</span> be used in the EAD item for the same type of authority but with separate semantics. Integer values between 1 and 23 are designated as Standards Track document required. Integer values from 24 to 255 are designated as Specification Required. Integer values from 256 to 65535 are designated as Expert Review. Integer values greater than 65535 are marked as Private Use.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
+<p id="section-5.2-5">CBOR Type:
+    This field contains the CBOR type for the field.<a href="#section-5.2-5" class="pilcrow">¶</a></p>
+<p id="section-5.2-6">Description:
+    This field contains a brief description for the field.<a href="#section-5.2-6" class="pilcrow">¶</a></p>
+<p id="section-5.2-7">Reference:
+    This contains a pointer to the public specification for the field, if one exists.<a href="#section-5.2-7" class="pilcrow">¶</a></p>
+<p id="section-5.2-8">This registry has been initially populated by the values in <a href="#_table-edhoc-ta-hint" class="auto internal xref">Table 1</a>. The Reference column for all of these entries is this document.<a href="#section-5.2-8" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="sec-normative-references">
@@ -1361,6 +1439,10 @@ ta_hint_ead_label = TBD
 <dt id="RFC2119">[RFC2119]</dt>
       <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8126">[RFC8126]</dt>
+      <dd>
+<span class="refAuthor">Cotton, M.</span>, <span class="refAuthor">Leiba, B.</span>, and <span class="refAuthor">T. Narten</span>, <span class="refTitle">"Guidelines for Writing an IANA Considerations Section in RFCs"</span>, <span class="seriesInfo">BCP 26</span>, <span class="seriesInfo">RFC 8126</span>, <span class="seriesInfo">DOI 10.17487/RFC8126</span>, <time datetime="2017-06" class="refDate">June 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8126">https://www.rfc-editor.org/rfc/rfc8126</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
       <dd>
