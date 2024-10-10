@@ -50,8 +50,7 @@ entity:
 
 --- abstract
 
-TODO Abstract
-
+This document defines the format for hints of Trust Anchors of trusted third parties for use with Ephemeral Diffie-Hellman Over COSE (EDHOC), either for authentication or for other purpose.
 
 --- middle
 
@@ -59,11 +58,11 @@ TODO Abstract
 
 Ephemeral Diffie-Hellman Over COSE (EDHOC) {{RFC9528}} is a lightweight security handshake protocol with low processing and message overhead, especially suited for constrained devices and low-power networking.
 
-In addition to excuting a handshake protocol, to perform authentication and authorization typically involves the validation of certificates or assertions using Trust Anchors (TAs) established by other means. For this machinery to work, an endpoint thus needs to use  credentials issued by a TA of the other endpoint. Moreover, the validation of credentials against TAs can be a significant contribution to processing or time to completion, for example in embedded devices. Performance can be gained by providing the other endpoint with hints about which TAs are supported, or which TAs should be used to verify specific credentials. This document specifies how to transport hints about TAs between EDHOC peers.
+In addition to excuting a handshake protocol, to perform authentication and authorization typically involves the validation of certificates or assertions using Trust Anchors (TAs) established by other means. For this machinery to work, an endpoint thus needs to use  credentials issued by a TA of the other endpoint. Moreover, the validation of credentials against TAs can be a significant contribution to processing or time to completion, for example in embedded devices. Performance can be gained by providing the other endpoint with hints about which TAs are supported, or which TAs should be used to verify specific credentials. This document specifies how to transport hints of TAs between EDHOC peers.
 
 EDHOC allows the inclusion of authorization-related information in the External Authorization Data (EAD) message fields, see {{Section 3.8 of RFC9528}}. EAD can be included in any of the four EDHOC messages (EAD_1, EAD_2, EAD_3, EAD_4), providing flexibility and extensibility to the protocol. Its main purpose is to embed authorization-related information directly into the key exchange process, reducing the need for additional message exchanges and simplifying the overall protocol flow. Information about TAs is explicitly mentioned as one example of such authorization-related information, see {{Appendix E of RFC9528}}.
 
-The primary motivation for this specification is to provide hints about TAs for authentication, typically related to Certificate Authorities (CAs), where the TA includes the public key of the CA. The hint is a COSE header parameter intended to facilitate the retrieval of the TA, for example a key identifier (kid) or a hash of an X.509 certificate containing the CA root public key (x5t), see {{ead-item}}. However, the same scheme can be applied to hints about other trusted third parties, such as Verifiers of remote attestation evidence {{RFC9334}} or Time Servers for network time synchronization {{RFC5905}}. This document defines an EDHOC EAD item containing hints about certain type of TAs, and enables the extension to other kind of hints and TAs through the registration of the appropriate IANA parameters.
+The primary motivation for this specification is to provide hints of TAs for authentication, typically related to Certificate Authorities (CAs), where the TA includes the public key of the CA. The hint is a COSE header parameter intended to facilitate the retrieval of the TA, for example a key identifier (kid) or a hash of an X.509 certificate containing the CA root public key (x5t), see {{ead-item}}. However, the same scheme can be applied to hints about other trusted third parties, such as Verifiers of remote attestation evidence {{RFC9334}} or Time Servers for network time synchronization {{RFC5905}}. This document defines an EDHOC EAD item containing hints about certain type of TAs, and enables the extension to other kind of hints and TAs through the registration of the appropriate IANA parameters.
 
 
 ## Terminology ## {#terminology}
@@ -148,7 +147,7 @@ If the validation against the trust anchors specified with the EAD item defined 
 
 # Security Considerations
 
-TODO Security
+TODO
 
 
 # IANA Considerations {#iana}
@@ -190,6 +189,9 @@ Reference:
 
 This registry has been initially populated by the values in {{table-edhoc-ta-hint}}. The Reference column for all of these entries is this document.
 
+## EDHOC Trust Anchor Hint Types
+
+TODO
 
 
 --- back
@@ -197,4 +199,4 @@ This registry has been initially populated by the values in {{table-edhoc-ta-hin
 # Acknowledgments
 {:numbered="false"}
 
-TODO acknowledge.
+TODO
