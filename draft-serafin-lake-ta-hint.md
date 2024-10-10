@@ -1,5 +1,5 @@
 ---
-title: "Trust Anchor Hints in EDHOC"
+title: "Trust Anchor Hints in Ephemeral Diffie-Hellman Over COSE (EDHOC)"
 abbrev: "TA Hints in EDHOC"
 category: std
 
@@ -33,9 +33,11 @@ author:
 
 normative:
   RFC2119:
+  RFC5905:
   RFC8126:
   RFC8174:
   RFC9528:
+  RFC9334:
 
 informative:
 
@@ -51,20 +53,20 @@ TODO Abstract
 
 # Introduction
 
-Ephemeral Diffie-Hellman Over COSE (EDHOC) {{RFC9528}} is a  lightweight security handshake protocol with low processing and message overhead especially suitable for constrained devices and low-power networks.
+Ephemeral Diffie-Hellman Over COSE (EDHOC) {{RFC9528}} is a lightweight security handshake protocol with low processing and message overhead, especially suited for constrained devices and low-power networking.
 
-Authentication and authorization, in addition to excuting a handshake protocol, typically requires the validation of certificates or assertions using Trust Anchors (TAs) established out-of-band. For this machinery to work, an endpoint thus needs to know and have credentials issued by a TA of the other endpoint. Moreover, the validation of credentials against TAs is a significant contribution to the processing in embedded devices, so it is desirable to provide hints about which TAs are supported, and which should be used to verify specific credentials.
+In addition to excuting a handshake protocol, to perform authentication and authorization typically involves the validation of certificates or assertions using Trust Anchors (TAs) established by other means. For this machinery to work, an endpoint thus needs to use  credentials issued by a TA of the other endpoint. Moreover, the validation of credentials against TAs can be a significant contribution to processing or time to completion, for example in embedded devices. Performance can be gained by providing the other endpoint with hints about which TAs are supported, or which TAs should be used to verify specific credentials. This document specifies how to transport hints about TAs between EDHOC peers.
 
-EDHOC allows the inclusion of authorization-related information in the External Authorization Data (EAD) message fields, see {{Section 3.8 of RFC9528}}. EAD can be included in any of the four EDHOC messages (EAD_1, EAD_2, EAD_3, EAD_4), providing flexibility and extensibility to the protocol. Its main purpose is to embed authorization-related information directly into the key exchange process, reducing the need for additional message exchanges and simplifying the overall protocol flow. Information about TAs is explicitly mentioned as one example, see {{Appendix E of RFC9528}}.
+EDHOC allows the inclusion of authorization-related information in the External Authorization Data (EAD) message fields, see {{Section 3.8 of RFC9528}}. EAD can be included in any of the four EDHOC messages (EAD_1, EAD_2, EAD_3, EAD_4), providing flexibility and extensibility to the protocol. Its main purpose is to embed authorization-related information directly into the key exchange process, reducing the need for additional message exchanges and simplifying the overall protocol flow. Information about TAs is explicitly mentioned as one example of such authorization-related information, see {{Appendix E of RFC9528}}.
 
-The primary motivation for this specification are TAs for authentication, typically Certificate Authorities, but the same mechanism can be applied to other trusted third parties, such as verifiers of remote attestation evidence or network time servers. This draft defines an EAD item containing hints about these kind of TAs, and enables extensions to other kind of trust roots through registration of appropriate IANA parameters.
+The primary motivation for this specification is to provide hints about TAs for authentication, typically related to Certificate Authorities (CAs), where the TA includes the public key of the CA. The hint is a COSE header parameter intended to facilitate the retrieval of the TA, for example a key identifier (kid) or a hash of an X.509 certificate containing the CA root public key (x5t), see {{ead-item}}. However, the same scheme can be applied to hints about other trusted third parties, such as Verifiers of remote attestation evidence {{RFC9334}} or Time Servers for network time synchronization {{RFC5905}}. This draft defines an EDHOC EAD item containing hints about certain type of TAs, and enables the extension to other kind of hints and TAs through the registration of the appropriate IANA parameters.
 
 
 ## Terminology ## {#terminology}
 
 {::boilerplate bcp14-tagged}
 
-# EAD Item
+# EAD Item {#ead-item}
 
 {{table-edhoc-ta-hint}} provides a summary of the EDHOC Trust Anchor hints defined in this section.
 
@@ -93,12 +95,23 @@ ead_ta_hint = (
 ta_hint_map = {
   * int => ta_hints
 },
+
 ta_hints = (ta_hint / [2* ta_hint]),
 ; ta_hints definitions with one required and several optional implementations.
-;REQUIRED to implement:
+~~~~~~~~~~~~~~~~~~~~
+{: #fig-cddl-model title="CDDL model" artwork-align="left"}
+
+The following ta_hint is REQUIRED to be implemented:
+
+~~~~~~~~~~~~~~~~~~~~ CDDL
 ; A required TA hint type using 'kid' (Key ID).
 ta_hint //= (ta_hint-type-kid, -24...23 / bstr)
-;OPTIONAL to implement:
+~~~~~~~~~~~~~~~~~~~~
+{: #fig-mti-ta-hint title="Mandatory to implement ta-hint" artwork-align="left"}
+
+Examples of other ta_hints are given in {{fig-examples-ta-hints}}.
+
+~~~~~~~~~~~~~~~~~~~~ CDDL
 ; An optional TA hint type using 'x5t' (X.509 CA/ICA Certificate SHA-1 thumbprint).
 ta_hint //= (ta_hint-type-x5t, COSE_CertHash)
 ; An optional TA hint type using 'x5u' (X.509 CA/ICA Certificate URL).
@@ -135,7 +148,7 @@ buuid = #6.37(bstr)
 ; The label for the EAD item containing TA hints
 ta_hint_ead_label = TBD
 ~~~~~~~~~~~~~~~~~~~~
-{: #fig-cddl-model title="CDDL model" artwork-align="left"}
+{: #fig-examples-ta-hints title="Examples of ta-hints" artwork-align="left"}
 
 
 # Processing
