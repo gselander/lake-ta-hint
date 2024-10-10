@@ -36,10 +36,14 @@ normative:
   RFC5905:
   RFC8126:
   RFC8174:
+  RFC9052:
   RFC9528:
   RFC9334:
+  RFC9390:
+  RFC9562:
 
 informative:
+  I-D.ietf-cose-cbor-encoded-cert:
 
 entity:
   SELF: "[RFC-XXXX]"
@@ -59,21 +63,21 @@ In addition to excuting a handshake protocol, to perform authentication and auth
 
 EDHOC allows the inclusion of authorization-related information in the External Authorization Data (EAD) message fields, see {{Section 3.8 of RFC9528}}. EAD can be included in any of the four EDHOC messages (EAD_1, EAD_2, EAD_3, EAD_4), providing flexibility and extensibility to the protocol. Its main purpose is to embed authorization-related information directly into the key exchange process, reducing the need for additional message exchanges and simplifying the overall protocol flow. Information about TAs is explicitly mentioned as one example of such authorization-related information, see {{Appendix E of RFC9528}}.
 
-The primary motivation for this specification is to provide hints about TAs for authentication, typically related to Certificate Authorities (CAs), where the TA includes the public key of the CA. The hint is a COSE header parameter intended to facilitate the retrieval of the TA, for example a key identifier (kid) or a hash of an X.509 certificate containing the CA root public key (x5t), see {{ead-item}}. However, the same scheme can be applied to hints about other trusted third parties, such as Verifiers of remote attestation evidence {{RFC9334}} or Time Servers for network time synchronization {{RFC5905}}. This draft defines an EDHOC EAD item containing hints about certain type of TAs, and enables the extension to other kind of hints and TAs through the registration of the appropriate IANA parameters.
+The primary motivation for this specification is to provide hints about TAs for authentication, typically related to Certificate Authorities (CAs), where the TA includes the public key of the CA. The hint is a COSE header parameter intended to facilitate the retrieval of the TA, for example a key identifier (kid) or a hash of an X.509 certificate containing the CA root public key (x5t), see {{ead-item}}. However, the same scheme can be applied to hints about other trusted third parties, such as Verifiers of remote attestation evidence {{RFC9334}} or Time Servers for network time synchronization {{RFC5905}}. This document defines an EDHOC EAD item containing hints about certain type of TAs, and enables the extension to other kind of hints and TAs through the registration of the appropriate IANA parameters.
 
 
 ## Terminology ## {#terminology}
 
 {::boilerplate bcp14-tagged}
 
-# EAD Item {#ead-item}
+# Trust Anchor Hints
 
-{{table-edhoc-ta-hint}} provides a summary of the EDHOC Trust Anchor hints defined in this section.
+{{table-edhoc-ta-hint}} provides a summary of the EDHOC Trust Anchor hints defined in this document.
 
-| Name                      | CBOR label | CBOR type   | Description                                   | Reference                        |
-| authentication_authority  | 1          | ta_hints    | Trust anchor of authentication credential     | [RFC-XXXX]                       |
-| attestation_verifier      | 2          | ta_hints    | Trust anchor of remote attestation verifier   | [RFC-XXXX]                       |
-| time_authority            | 3          | ta_hints    | Trust anchor of time server                   | [RFC-XXXX]                      |
+| Name                      | CBOR label |  Description                                   | Reference                        |
+| authentication_authority  | 1          | Trust anchor of authentication credential     | [RFC-XXXX]                       |
+| attestation_verifier      | 2          | Trust anchor of remote attestation verifier   | [RFC-XXXX]                       |
+| time_authority            | 3          | Trust anchor of time server                   | [RFC-XXXX]                      |
 {: #table-edhoc-ta-hint title="EDHOC Trust Anchor hints" align="center"}
 
 * authentication\_authority: This parameter hints at which TA to use for authentication credentials used in EDHOC. The positive CBOR label (+1) in the EAD item indicates trust anchor to use for verifying the authentication credentials from the sender. The negative CBOR label (-1) indicates what trust anchors are supported by the sender and SHOULD be used in authentication credentials sent to the sender.
@@ -81,93 +85,53 @@ The primary motivation for this specification is to provide hints about TAs for 
 * time\_authority: TODO
 
 
+## EAD Item {#ead-item}
 
-## CDDL Specification
+Like all EAD items, ead_ta_hint consists of the ead_label, a predefined constant that identifies this particular EAD structure, and the ead_value, which in this case is a byte string containing a CBOR map with the CBOR-encoded TA hints.
 
-The following CDDL defines the EAD item for Trust Anchor hints:
+The following CDDL defines the EAD item:
 
 ~~~~~~~~~~~~~~~~~~~~ CDDL
 ead_ta_hint = (
-    ead_label: ta_hint_ead_label,  ; A predefined constant that identifies this particular EAD structure
-    ead_value: bstr .cbor ta_hint_map ; The value is a byte string containing CBOR-encoded TA hints
+    ead_label: TBD,
+    ead_value: bstr .cbor ta_hint_map,
 )
 
 ta_hint_map = {
   * int => ta_hints
 },
 
-ta_hints = (ta_hint / [2* ta_hint]),
-; ta_hints definitions with one required and several optional implementations.
+ta_hints = [ * ta_hint ] / ta_hint
+
+ta_hint = ( ta_hint_type, ta_hint_value )
 ~~~~~~~~~~~~~~~~~~~~
-{: #fig-cddl-model title="CDDL model" artwork-align="left"}
+{: #fig-ead-item title="EAD item" artwork-align="left"}
 
-The following ta_hint is REQUIRED to be implemented:
+{{table-ta-hint-types}} provides a summary of the TA hint types defined in this document.
 
-~~~~~~~~~~~~~~~~~~~~ CDDL
-; A required TA hint type using 'kid' (Key ID).
-ta_hint //= (ta_hint-type-kid, -24...23 / bstr)
-~~~~~~~~~~~~~~~~~~~~
-{: #fig-mti-ta-hint title="Mandatory to implement ta-hint" artwork-align="left"}
 
-Examples of other ta_hints are given in {{fig-examples-ta-hints}}.
+| TA hint type | CBOR label | CBOR type       | Description                   | Reference                           |
+| kid          | 1          | bstr / -24..23  | Key identifier                | [RFC-9052]                       |
+| x5t          | 2          | COSE_CertHash   | X.509 certificate thumbprint  | [RFC-9360]                          |
+| x5u          | 3          | uri             | X.509 certificate URI         | [RFC-9360]                          |
+| c5t          | 4          | COSE_CertHash   | C509 certificate thumbprint   | [draft-ietf-cose-cbor-encoded-cert] |
+| c5u          | 5          | uri             | C509 certificate URI          | [draft-ietf-cose-cbor-encoded-cert] |
+| uuid         | 6          | #6.37(bstr)     |  Binary CBOR-encoded UUID     | [RFC-9562]                          |
+{: #table-ta-hint-types title="EDHOC Trust Anchor hint types" align="center"}
 
-~~~~~~~~~~~~~~~~~~~~ CDDL
-; An optional TA hint type using 'x5t' (X.509 CA/ICA Certificate SHA-1 thumbprint).
-ta_hint //= (ta_hint-type-x5t, COSE_CertHash)
-; An optional TA hint type using 'x5u' (X.509 CA/ICA Certificate URL).
-ta_hint //= (ta_hint-type-x5u, uri)
-; An optional TA hint type using 'c5t' (CBOR CA/ICA Certificate SHA-1 thumbprint).
-ta_hint //= (ta_hint-type-c5t, COSE_CertHash)
-; An optional TA hint type using 'c5u' (CBOR CA/ICA Certificate URL).
-ta_hint //= (ta_hint-type-c5u, uri)
-; An optional TA hint type using 'uuid', represented as a binary UUID.
-ta_hint //= (ta_hint-type-uuid, buuid)
-; Trust type identifiers used to specify the type of trust hint in ta_hint.
-;REQUIRED to implement:
-; Identifier for 'kid' TA hint type.
-ta_hint-type-kid = 1
-;OPTIONAL to implement:
-; Identifier for 'x5t' TA hint type.
-ta_hint-type-x5t = 2
-; Identifier for 'x5u' TA hint type.
-ta_hint-type-x5u = 3
-; Identifier for 'c5t' TA hint type.
-ta_hint-type-c5t = 4
-; Identifier for 'c5u' TA hint type.
-ta_hint-type-c5u = 5
-; Identifier for 'uuid' TA hint type.
-ta_hint-type-uuid = 6
-; Defined in [RFC9360]
-COSE_CertHash = [
-    hashAlg: (int / tstr),  ; Hash algorithm identifier corresponding to the Value column of the algorithm
-registered in the "COSE Algorithms" registry.
-    hashValue: bstr         ; The hash value itself as a byte string.
-]
-; Binary UUID (universally unique identifier) tagged with specific CBOR tag to ensure proper encoding.
-buuid = #6.37(bstr)
-; The label for the EAD item containing TA hints
-ta_hint_ead_label = TBD
-~~~~~~~~~~~~~~~~~~~~
-{: #fig-examples-ta-hints title="Examples of ta-hints" artwork-align="left"}
+* kid: A key identifier
+* x5t: A thumbprint of an X.509 certificate {{RFC9390}}
+* x5u: A URL pointing to an X.509 certificate {{RFC9390}}
+* c5t: A thumbprint of a C509 certificate {{I-D.ietf-cose-cbor-encoded-cert}}
+* c5u: A URL pointing to a CBOR certificate {{I-D.ietf-cose-cbor-encoded-cert}}
+* uuid: A binary Universally Unique Identifier
 
+The ta_hint_type 'kid' is REQUIRED to be implemented.
 
 # Processing
 
 In EDHOC message_2, where the responder sends its credentials, the ead_ta_hint format is used to include trust anchor hints in the EAD_2 field. This hint informs the initiator about which trust roots to prioritize when verifying the responder's credentials. For example, if the initiator’s trust store contains multiple CA/intermediate CA certificates, the responder can include a hint indicating that the credentials should be verified using a specific trust root identified by kid, x5t, x5u, c5t, c5u or UUID.
 
-The hint structure is designed as follows:
-
-* ead_label: A predefined constant that identifies this EAD structure.
-* ead_value: A byte string containing CBOR map of CBOR encoded trust anchor hints (ta_hints).
-
-ta_hints can contain one or more ta_hint entries, where each entry provides a hint on which trust root to use. The hints can include:
-
-* kid: A key identifier for a specific trust root.
-* x5t: A SHA-1 thumbprint of an X.509 certificate.
-* x5u: A URL pointing to an X.509 certificate.
-* c5t: A SHA-1 thumbprint of a CBOR certificate.
-* c5u: A URL pointing to a CBOR certificate.
-* aeid: A binary UUID representing an Assa Abloy Entity Identifier
 
 ## Example Scenario
 Consider a scenario where the initiator trusts five CA/intermediate certificates. The responder, when sending message_2, knows that the initiator should use the trust root identified by kid=`edhoc-noc-ica-2` for verification. The responder includes this hint in EAD_2:
