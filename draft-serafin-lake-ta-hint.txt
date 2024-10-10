@@ -14,7 +14,9 @@ Expires: 13 April 2025                                          Ericsson
 
 Abstract
 
-   TODO Abstract
+   This document defines the format for hints of Trust Anchors of
+   trusted third parties for use with Ephemeral Diffie-Hellman Over COSE
+   (EDHOC), either for authentication or for other purpose.
 
 About This Document
 
@@ -77,6 +79,7 @@ Table of Contents
    5.  IANA Considerations
      5.1.  EDHOC External Authorization Data Registry
      5.2.  EDHOC Trust Anchor Hint Registry
+     5.3.  EDHOC Trust Anchor Hint Types
    6.  References
      6.1.  Normative References
      6.2.  Informative References
@@ -99,7 +102,7 @@ Table of Contents
    embedded devices.  Performance can be gained by providing the other
    endpoint with hints about which TAs are supported, or which TAs
    should be used to verify specific credentials.  This document
-   specifies how to transport hints about TAs between EDHOC peers.
+   specifies how to transport hints of TAs between EDHOC peers.
 
    EDHOC allows the inclusion of authorization-related information in
    the External Authorization Data (EAD) message fields, see Section 3.8
@@ -112,19 +115,18 @@ Table of Contents
    of such authorization-related information, see Appendix E of
    [RFC9528].
 
-   The primary motivation for this specification is to provide hints
-   about TAs for authentication, typically related to Certificate
-   Authorities (CAs), where the TA includes the public key of the CA.
-   The hint is a COSE header parameter intended to facilitate the
-   retrieval of the TA, for example a key identifier (kid) or a hash of
-   an X.509 certificate containing the CA root public key (x5t), see
-   Section 2.1.  However, the same scheme can be applied to hints about
-   other trusted third parties, such as Verifiers of remote attestation
-   evidence [RFC9334] or Time Servers for network time synchronization
-   [RFC5905].  This document defines an EDHOC EAD item containing hints
-   about certain type of TAs, and enables the extension to other kind of
-   hints and TAs through the registration of the appropriate IANA
-   parameters.
+   The primary motivation for this specification is to provide hints of
+   TAs for authentication, typically related to Certificate Authorities
+   (CAs), where the TA includes the public key of the CA.  The hint is a
+   COSE header parameter intended to facilitate the retrieval of the TA,
+   for example a key identifier (kid) or a hash of an X.509 certificate
+   containing the CA root public key (x5t), see Section 2.1.  However,
+   the same scheme can be applied to hints about other trusted third
+   parties, such as Verifiers of remote attestation evidence [RFC9334]
+   or Time Servers for network time synchronization [RFC5905].  This
+   document defines an EDHOC EAD item containing hints about certain
+   type of TAs, and enables the extension to other kind of hints and TAs
+   through the registration of the appropriate IANA parameters.
 
 1.1.  Terminology
 
@@ -274,7 +276,7 @@ Table of Contents
 
 4.  Security Considerations
 
-   TODO Security
+   TODO
 
 5.  IANA Considerations
 
@@ -328,6 +330,10 @@ Table of Contents
 
    This registry has been initially populated by the values in Table 1.
    The Reference column for all of these entries is this document.
+
+5.3.  EDHOC Trust Anchor Hint Types
+
+   TODO
 
 6.  References
 
@@ -387,7 +393,7 @@ Table of Contents
 
 Acknowledgments
 
-   TODO acknowledge.
+   TODO
 
 Authors' Addresses
 

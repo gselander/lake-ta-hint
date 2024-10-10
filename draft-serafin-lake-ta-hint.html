@@ -8,7 +8,7 @@
 <meta content="Marek Serafin" name="author">
 <meta content="Göran Selander" name="author">
 <meta content="
-       TODO Abstract 
+       This document defines the format for hints of Trust Anchors of trusted third parties for use with Ephemeral Diffie-Hellman Over COSE (EDHOC), either for authentication or for other purpose. 
     " name="description">
 <meta content="xml2rfc 3.23.2" name="generator">
 <meta content="Internet-Draft" name="keyword">
@@ -1064,7 +1064,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">Trust Anchor Hints in Ephemeral Diffie-Hellman Over COSE (EDHOC)</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">TODO Abstract<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document defines the format for hints of Trust Anchors of trusted third parties for use with Ephemeral Diffie-Hellman Over COSE (EDHOC), either for authentication or for other purpose.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1166,6 +1166,9 @@ svg :is([fill="white"], [fill^="#fff"]) {
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
                 <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-edhoc-trust-anchor-hint-reg" class="internal xref">EDHOC Trust Anchor Hint Registry</a></p>
 </li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
+                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-edhoc-trust-anchor-hint-type" class="internal xref">EDHOC Trust Anchor Hint Types</a></p>
+</li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
@@ -1195,9 +1198,9 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
 <p id="section-1-1">Ephemeral Diffie-Hellman Over COSE (EDHOC) <span>[<a href="#RFC9528" class="cite xref">RFC9528</a>]</span> is a lightweight security handshake protocol with low processing and message overhead, especially suited for constrained devices and low-power networking.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">In addition to excuting a handshake protocol, to perform authentication and authorization typically involves the validation of certificates or assertions using Trust Anchors (TAs) established by other means. For this machinery to work, an endpoint thus needs to use  credentials issued by a TA of the other endpoint. Moreover, the validation of credentials against TAs can be a significant contribution to processing or time to completion, for example in embedded devices. Performance can be gained by providing the other endpoint with hints about which TAs are supported, or which TAs should be used to verify specific credentials. This document specifies how to transport hints about TAs between EDHOC peers.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-2">In addition to excuting a handshake protocol, to perform authentication and authorization typically involves the validation of certificates or assertions using Trust Anchors (TAs) established by other means. For this machinery to work, an endpoint thus needs to use  credentials issued by a TA of the other endpoint. Moreover, the validation of credentials against TAs can be a significant contribution to processing or time to completion, for example in embedded devices. Performance can be gained by providing the other endpoint with hints about which TAs are supported, or which TAs should be used to verify specific credentials. This document specifies how to transport hints of TAs between EDHOC peers.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <p id="section-1-3">EDHOC allows the inclusion of authorization-related information in the External Authorization Data (EAD) message fields, see <span><a href="https://rfc-editor.org/rfc/rfc9528#section-3.8" class="relref">Section 3.8</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>. EAD can be included in any of the four EDHOC messages (EAD_1, EAD_2, EAD_3, EAD_4), providing flexibility and extensibility to the protocol. Its main purpose is to embed authorization-related information directly into the key exchange process, reducing the need for additional message exchanges and simplifying the overall protocol flow. Information about TAs is explicitly mentioned as one example of such authorization-related information, see <span><a href="https://rfc-editor.org/rfc/rfc9528#appendix-E" class="relref">Appendix E</a> of [<a href="#RFC9528" class="cite xref">RFC9528</a>]</span>.<a href="#section-1-3" class="pilcrow">¶</a></p>
-<p id="section-1-4">The primary motivation for this specification is to provide hints about TAs for authentication, typically related to Certificate Authorities (CAs), where the TA includes the public key of the CA. The hint is a COSE header parameter intended to facilitate the retrieval of the TA, for example a key identifier (kid) or a hash of an X.509 certificate containing the CA root public key (x5t), see <a href="#ead-item" class="auto internal xref">Section 2.1</a>. However, the same scheme can be applied to hints about other trusted third parties, such as Verifiers of remote attestation evidence <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span> or Time Servers for network time synchronization <span>[<a href="#RFC5905" class="cite xref">RFC5905</a>]</span>. This document defines an EDHOC EAD item containing hints about certain type of TAs, and enables the extension to other kind of hints and TAs through the registration of the appropriate IANA parameters.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-4">The primary motivation for this specification is to provide hints of TAs for authentication, typically related to Certificate Authorities (CAs), where the TA includes the public key of the CA. The hint is a COSE header parameter intended to facilitate the retrieval of the TA, for example a key identifier (kid) or a hash of an X.509 certificate containing the CA root public key (x5t), see <a href="#ead-item" class="auto internal xref">Section 2.1</a>. However, the same scheme can be applied to hints about other trusted third parties, such as Verifiers of remote attestation evidence <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span> or Time Servers for network time synchronization <span>[<a href="#RFC5905" class="cite xref">RFC5905</a>]</span>. This document defines an EDHOC EAD item containing hints about certain type of TAs, and enables the extension to other kind of hints and TAs through the registration of the appropriate IANA parameters.<a href="#section-1-4" class="pilcrow">¶</a></p>
 <div id="terminology">
 <section id="section-1.1">
         <h3 id="name-terminology">
@@ -1408,7 +1411,7 @@ ta_hint = ( ta_hint_type, ta_hint_value )
       <h2 id="name-security-considerations">
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-4-1">TODO Security<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-1">TODO<a href="#section-4-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="iana">
@@ -1447,6 +1450,14 @@ ta_hint = ( ta_hint_type, ta_hint_value )
 <p id="section-5.2-7">Reference:
     This contains a pointer to the public specification for the field, if one exists.<a href="#section-5.2-7" class="pilcrow">¶</a></p>
 <p id="section-5.2-8">This registry has been initially populated by the values in <a href="#_table-edhoc-ta-hint" class="auto internal xref">Table 1</a>. The Reference column for all of these entries is this document.<a href="#section-5.2-8" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="edhoc-trust-anchor-hint-types">
+<section id="section-5.3">
+        <h3 id="name-edhoc-trust-anchor-hint-type">
+<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-edhoc-trust-anchor-hint-type" class="section-name selfRef">EDHOC Trust Anchor Hint Types</a>
+        </h3>
+<p id="section-5.3-1">TODO<a href="#section-5.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1521,7 +1532,7 @@ ta_hint = ( ta_hint_type, ta_hint_value )
       <h2 id="name-acknowledgments">
 <a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
       </h2>
-<p id="appendix-A-1">TODO acknowledge.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-1">TODO<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">
