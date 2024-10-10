@@ -5,11 +5,11 @@
 Lightweight Authenticated Key Exchange                        M. Serafin
 Internet-Draft                                                ASSA ABLOY
 Intended status: Standards Track                             G. Selander
-Expires: 7 April 2025                                           Ericsson
-                                                          4 October 2024
+Expires: 13 April 2025                                          Ericsson
+                                                         10 October 2024
 
 
-                      Trust Anchor Hints in EDHOC
+    Trust Anchor Hints in Ephemeral Diffie-Hellman Over COSE (EDHOC)
                    draft-serafin-lake-ta-hint-latest
 
 Abstract
@@ -49,7 +49,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 7 April 2025.
+   This Internet-Draft will expire on 13 April 2025.
 
 Copyright Notice
 
@@ -84,18 +84,20 @@ Table of Contents
 1.  Introduction
 
    Ephemeral Diffie-Hellman Over COSE (EDHOC) [RFC9528] is a lightweight
-   security handshake protocol with low processing and message overhead
-   especially suitable for constrained devices and low-power networks.
+   security handshake protocol with low processing and message overhead,
+   especially suited for constrained devices and low-power networking.
 
-   Authentication and authorization, in addition to excuting a handshake
-   protocol, typically requires the validation of certificates or
-   assertions using Trust Anchors (TAs) established out-of-band.  For
-   this machinery to work, an endpoint thus needs to know and have
-   credentials issued by a TA of the other endpoint.  Moreover, the
-   validation of credentials against TAs is a significant contribution
-   to the processing in embedded devices, so it is desirable to provide
-   hints about which TAs are supported, and which should be used to
-   verify specific credentials.
+   In addition to excuting a handshake protocol, to perform
+   authentication and authorization typically involves the validation of
+   certificates or assertions using Trust Anchors (TAs) established by
+   other means.  For this machinery to work, an endpoint thus needs to
+   use credentials issued by a TA of the other endpoint.  Moreover, the
+   validation of credentials against TAs can be a significant
+   contribution to processing or time to completion, for example in
+   embedded devices.  Performance can be gained by providing the other
+   endpoint with hints about which TAs are supported, or which TAs
+   should be used to verify specific credentials.  This document
+   specifies how to transport hints about TAs between EDHOC peers.
 
    EDHOC allows the inclusion of authorization-related information in
    the External Authorization Data (EAD) message fields, see Section 3.8
@@ -104,16 +106,23 @@ Table of Contents
    to the protocol.  Its main purpose is to embed authorization-related
    information directly into the key exchange process, reducing the need
    for additional message exchanges and simplifying the overall protocol
-   flow.  Information about TAs is explicitly mentioned as one example,
-   see Appendix E of [RFC9528].
+   flow.  Information about TAs is explicitly mentioned as one example
+   of such authorization-related information, see Appendix E of
+   [RFC9528].
 
-   The primary motivation for this specification are TAs for
-   authentication, typically Certificate Authorities, but the same
-   mechanism can be applied to other trusted third parties, such as
-   verifiers of remote attestation evidence or network time servers.
-   This draft defines an EAD item containing hints about these kind of
-   TAs, and enables extensions to other kind of trust roots through
-   registration of appropriate IANA parameters.
+   The primary motivation for this specification is to provide hints
+   about TAs for authentication, typically related to Certificate
+   Authorities (CAs), where the TA includes the public key of the CA.
+   The hint is a COSE header parameter intended to facilitate the
+   retrieval of the TA, for example a key identifier (kid) or a hash of
+   an X.509 certificate containing the CA root public key (x5t), see
+   Section 2.  However, the same scheme can be applied to hints about
+   other trusted third parties, such as Verifiers of remote attestation
+   evidence [RFC9334] or Time Servers for network time synchronization
+   [RFC5905].  This draft defines an EDHOC EAD item containing hints
+   about certain type of TAs, and enables the extension to other kind of
+   hints and TAs through the registration of the appropriate IANA
+   parameters.
 
 1.1.  Terminology
 
@@ -171,12 +180,21 @@ ead_ta_hint = (
 ta_hint_map = {
   * int => ta_hints
 },
+
 ta_hints = (ta_hint / [2* ta_hint]),
 ; ta_hints definitions with one required and several optional implementations.
-;REQUIRED to implement:
-; A required TA hint type using 'kid' (Key ID).
-ta_hint //= (ta_hint-type-kid, -24...23 / bstr)
-;OPTIONAL to implement:
+
+                         Figure 1: CDDL model
+
+   The following ta_hint is REQUIRED to be implemented:
+
+   ; A required TA hint type using 'kid' (Key ID).
+   ta_hint //= (ta_hint-type-kid, -24...23 / bstr)
+
+                  Figure 2: Mandatory to implement ta-hint
+
+   Examples of other ta_hints are given in Figure 3.
+
 ; An optional TA hint type using 'x5t' (X.509 CA/ICA Certificate SHA-1 thumbprint).
 ta_hint //= (ta_hint-type-x5t, COSE_CertHash)
 ; An optional TA hint type using 'x5u' (X.509 CA/ICA Certificate URL).
@@ -213,7 +231,7 @@ buuid = #6.37(bstr)
 ; The label for the EAD item containing TA hints
 ta_hint_ead_label = TBD
 
-                         Figure 1: CDDL model
+                    Figure 3: Examples of ta-hints
 
 3.  Processing
 
@@ -332,6 +350,11 @@ ta_hint_ead_label = TBD
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
 
+   [RFC5905]  Mills, D., Martin, J., Ed., Burbank, J., and W. Kasch,
+              "Network Time Protocol Version 4: Protocol and Algorithms
+              Specification", RFC 5905, DOI 10.17487/RFC5905, June 2010,
+              <https://www.rfc-editor.org/rfc/rfc5905>.
+
    [RFC8126]  Cotton, M., Leiba, B., and T. Narten, "Guidelines for
               Writing an IANA Considerations Section in RFCs", BCP 26,
               RFC 8126, DOI 10.17487/RFC8126, June 2017,
@@ -340,6 +363,11 @@ ta_hint_ead_label = TBD
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [RFC9334]  Birkholz, H., Thaler, D., Richardson, M., Smith, N., and
+              W. Pan, "Remote ATtestation procedureS (RATS)
+              Architecture", RFC 9334, DOI 10.17487/RFC9334, January
+              2023, <https://www.rfc-editor.org/rfc/rfc9334>.
 
    [RFC9528]  Selander, G., Preuß Mattsson, J., and F. Palombini,
               "Ephemeral Diffie-Hellman Over COSE (EDHOC)", RFC 9528,
