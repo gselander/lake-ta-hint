@@ -185,11 +185,11 @@ Table of Contents
    ead_ta_hint = (
        ead_label: TBD,
        ead_value: bstr .cbor ta_hint_map,
-   )
+   ),
 
    ta_hint_map = {
      * int => header_map
-   },
+   }
 
                              Figure 1: EAD item
 
