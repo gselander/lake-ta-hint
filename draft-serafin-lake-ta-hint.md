@@ -94,12 +94,11 @@ The following CDDL defines the EAD item, where header_map is defined in {{Sectio
 ead_ta_hint = (
     ead_label: TBD,
     ead_value: bstr .cbor ta_hint_map,
-)
+),
 
 ta_hint_map = {
   * int => header_map
-},
-
+}
 ~~~~~~~~~~~~~~~~~~~~
 {: #fig-ead-item title="EAD item" artwork-align="left"}
 
