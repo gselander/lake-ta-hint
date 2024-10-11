@@ -5,8 +5,8 @@
 Lightweight Authenticated Key Exchange                        M. Serafin
 Internet-Draft                                                ASSA ABLOY
 Intended status: Standards Track                             G. Selander
-Expires: 13 April 2025                                          Ericsson
-                                                         10 October 2024
+Expires: 14 April 2025                                          Ericsson
+                                                         11 October 2024
 
 
     Trust Anchor Hints in Ephemeral Diffie-Hellman Over COSE (EDHOC)
@@ -14,9 +14,9 @@ Expires: 13 April 2025                                          Ericsson
 
 Abstract
 
-   This document defines the format for hints of Trust Anchors of
+   This document defines a format for hints about Trust Anchors of
    trusted third parties for use with Ephemeral Diffie-Hellman Over COSE
-   (EDHOC), either for authentication or for other purpose.
+   (EDHOC).
 
 About This Document
 
@@ -51,7 +51,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 13 April 2025.
+   This Internet-Draft will expire on 14 April 2025.
 
 Copyright Notice
 
@@ -79,7 +79,6 @@ Table of Contents
    5.  IANA Considerations
      5.1.  EDHOC External Authorization Data Registry
      5.2.  EDHOC Trust Anchor Hint Registry
-     5.3.  EDHOC Trust Anchor Hint Types
    6.  References
      6.1.  Normative References
      6.2.  Informative References
@@ -179,7 +178,9 @@ Table of Contents
    and the ead_value, which in this case is a byte string containing a
    CBOR map with the CBOR-encoded TA hints.
 
-   The following CDDL defines the EAD item:
+   The following CDDL defines the EAD item, where header_map is defined
+   in Section 3 of [RFC9052], and contain one or more COSE header
+   parameters.
 
    ead_ta_hint = (
        ead_label: TBD,
@@ -187,62 +188,43 @@ Table of Contents
    )
 
    ta_hint_map = {
-     * int => ta_hints
+     * int => header_map
    },
-
-   ta_hints = [ * ta_hint ] / ta_hint
-
-   ta_hint = ( ta_hint_type, ta_hint_value )
 
                              Figure 1: EAD item
 
-   Table 2 provides a summary of the TA hint types defined in this
-   document.
+   Table 2 provides examples COSE header_maps used as TA hint types.
 
     +=========+=======+===============+==============+===============+
     | TA hint | CBOR  | CBOR type     | Description  | Reference     |
     | type    | label |               |              |               |
     +=========+=======+===============+==============+===============+
-    | kid     | 1     | bstr /        | Key          | [RFC-9052]    |
+    | kid     | 4     | bstr /        | Key          | [RFC-9052]    |
     |         |       | -24..23       | identifier   |               |
     +---------+-------+---------------+--------------+---------------+
-    | x5t     | 2     | COSE_CertHash | X.509        | [RFC-9360]    |
-    |         |       |               | certificate  |               |
-    |         |       |               | thumbprint   |               |
-    +---------+-------+---------------+--------------+---------------+
-    | x5u     | 3     | uri           | X.509        | [RFC-9360]    |
-    |         |       |               | certificate  |               |
-    |         |       |               | URI          |               |
-    +---------+-------+---------------+--------------+---------------+
-    | c5t     | 4     | COSE_CertHash | C509         | [draft-ietf-  |
+    | c5t     | 22    | COSE_CertHash | C509         | [draft-ietf-  |
     |         |       |               | certificate  | cose-cbor-    |
     |         |       |               | thumbprint   | encoded-cert] |
     +---------+-------+---------------+--------------+---------------+
-    | c5u     | 5     | uri           | C509         | [draft-ietf-  |
+    | c5u     | 23    | uri           | C509         | [draft-ietf-  |
     |         |       |               | certificate  | cose-cbor-    |
     |         |       |               | URI          | encoded-cert] |
     +---------+-------+---------------+--------------+---------------+
-    | uuid    | 6     | #6.37(bstr)   | Binary CBOR- | [RFC-9562]    |
+    | x5t     | 34    | COSE_CertHash | X.509        | [RFC-9360]    |
+    |         |       |               | certificate  |               |
+    |         |       |               | thumbprint   |               |
+    +---------+-------+---------------+--------------+---------------+
+    | x5u     | 35    | uri           | X.509        | [RFC-9360]    |
+    |         |       |               | certificate  |               |
+    |         |       |               | URI          |               |
+    +---------+-------+---------------+--------------+---------------+
+    | uuid    | TBD   | #6.37(bstr)   | Binary CBOR- | [RFC-9562]    |
     |         |       |               | encoded UUID |               |
     +---------+-------+---------------+--------------+---------------+
 
                   Table 2: EDHOC Trust Anchor hint types
 
-   *  kid: A key identifier
-
-   *  x5t: A thumbprint of an X.509 certificate [RFC9390]
-
-   *  x5u: A URL pointing to an X.509 certificate [RFC9390]
-
-   *  c5t: A thumbprint of a C509 certificate
-      [I-D.ietf-cose-cbor-encoded-cert]
-
-   *  c5u: A URL pointing to a CBOR certificate
-      [I-D.ietf-cose-cbor-encoded-cert]
-
-   *  uuid: A binary Universally Unique Identifier
-
-   The ta_hint_type 'kid' is REQUIRED to be implemented.
+   The TA hint type 'kid' is REQUIRED to be implemented.
 
 3.  Processing
 
@@ -330,10 +312,6 @@ Table of Contents
 
    This registry has been initially populated by the values in Table 1.
    The Reference column for all of these entries is this document.
-
-5.3.  EDHOC Trust Anchor Hint Types
-
-   TODO
 
 6.  References
 
