@@ -50,7 +50,7 @@ entity:
 
 --- abstract
 
-This document defines the format for hints of Trust Anchors of trusted third parties for use with Ephemeral Diffie-Hellman Over COSE (EDHOC), either for authentication or for other purpose.
+This document defines a format for hints about Trust Anchors of trusted third parties for use with Ephemeral Diffie-Hellman Over COSE (EDHOC).
 
 --- middle
 
@@ -88,7 +88,7 @@ The primary motivation for this specification is to provide hints of TAs for aut
 
 Like all EAD items, ead_ta_hint consists of the ead_label, a predefined constant that identifies this particular EAD structure, and the ead_value, which in this case is a byte string containing a CBOR map with the CBOR-encoded TA hints.
 
-The following CDDL defines the EAD item:
+The following CDDL defines the EAD item, where header_map is defined in {{Section 3 of RFC9052}}, and contain one or more COSE header parameters.
 
 ~~~~~~~~~~~~~~~~~~~~ CDDL
 ead_ta_hint = (
@@ -97,35 +97,25 @@ ead_ta_hint = (
 )
 
 ta_hint_map = {
-  * int => ta_hints
+  * int => header_map
 },
 
-ta_hints = [ * ta_hint ] / ta_hint
-
-ta_hint = ( ta_hint_type, ta_hint_value )
 ~~~~~~~~~~~~~~~~~~~~
 {: #fig-ead-item title="EAD item" artwork-align="left"}
 
-{{table-ta-hint-types}} provides a summary of the TA hint types defined in this document.
+{{table-ta-hint-types}} provides examples COSE header_maps used as TA hint types.
 
 
 | TA hint type | CBOR label | CBOR type       | Description                   | Reference                           |
-| kid          | 1          | bstr / -24..23  | Key identifier                | [RFC-9052]                       |
-| x5t          | 2          | COSE_CertHash   | X.509 certificate thumbprint  | [RFC-9360]                          |
-| x5u          | 3          | uri             | X.509 certificate URI         | [RFC-9360]                          |
-| c5t          | 4          | COSE_CertHash   | C509 certificate thumbprint   | [draft-ietf-cose-cbor-encoded-cert] |
-| c5u          | 5          | uri             | C509 certificate URI          | [draft-ietf-cose-cbor-encoded-cert] |
-| uuid         | 6          | #6.37(bstr)     |  Binary CBOR-encoded UUID     | [RFC-9562]                          |
+| kid          | 4          | bstr / -24..23  | Key identifier                | [RFC-9052]                       |
+| c5t          | 22         | COSE_CertHash   | C509 certificate thumbprint   | [draft-ietf-cose-cbor-encoded-cert] |
+| c5u          | 23         | uri             | C509 certificate URI          | [draft-ietf-cose-cbor-encoded-cert] |
+| x5t          | 34         | COSE_CertHash   | X.509 certificate thumbprint  | [RFC-9360]                          |
+| x5u          | 35         | uri             | X.509 certificate URI         | [RFC-9360]                          |
+| uuid         | TBD        | #6.37(bstr)     |  Binary CBOR-encoded UUID     | [RFC-9562]                          |
 {: #table-ta-hint-types title="EDHOC Trust Anchor hint types" align="center"}
 
-* kid: A key identifier
-* x5t: A thumbprint of an X.509 certificate {{RFC9390}}
-* x5u: A URL pointing to an X.509 certificate {{RFC9390}}
-* c5t: A thumbprint of a C509 certificate {{I-D.ietf-cose-cbor-encoded-cert}}
-* c5u: A URL pointing to a CBOR certificate {{I-D.ietf-cose-cbor-encoded-cert}}
-* uuid: A binary Universally Unique Identifier
-
-The ta_hint_type 'kid' is REQUIRED to be implemented.
+The TA hint type 'kid' is REQUIRED to be implemented.
 
 # Processing
 
@@ -189,9 +179,6 @@ Reference:
 
 This registry has been initially populated by the values in {{table-edhoc-ta-hint}}. The Reference column for all of these entries is this document.
 
-## EDHOC Trust Anchor Hint Types
-
-TODO
 
 
 --- back
