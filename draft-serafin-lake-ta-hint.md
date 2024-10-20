@@ -39,7 +39,7 @@ normative:
   RFC9052:
   RFC9528:
   RFC9334:
-  RFC9390:
+  RFC9360:
   RFC9562:
 
 informative:
@@ -50,7 +50,7 @@ entity:
 
 --- abstract
 
-This document defines a format for hints about Trust Anchors of trusted third parties for use with Ephemeral Diffie-Hellman Over COSE (EDHOC).
+This document defines a format for transport of hints about Trust Anchors of trusted third parties when using the lightweight authenticated key exchange protocol Ephemeral Diffie-Hellman Over COSE (EDHOC).
 
 --- middle
 
@@ -58,9 +58,9 @@ This document defines a format for hints about Trust Anchors of trusted third pa
 
 Ephemeral Diffie-Hellman Over COSE (EDHOC) {{RFC9528}} is a lightweight security handshake protocol with low processing and message overhead, especially suited for constrained devices and low-power networking.
 
-In addition to excuting a handshake protocol, to perform authentication and authorization typically involves the validation of certificates or assertions using Trust Anchors (TAs) established by other means. For this machinery to work, an endpoint thus needs to use  credentials issued by a TA of the other endpoint. Moreover, the validation of credentials against TAs can be a significant contribution to processing or time to completion, for example in embedded devices. Performance can be gained by providing the other endpoint with hints about which TAs are supported, or which TAs should be used to verify specific credentials. This document specifies how to transport hints of TAs between EDHOC peers.
+Authentication and authorization, in addition to excuting a security handshake protocol, typically involves the validation of certificates or assertions using Trust Anchors (TAs). For this machinery to work, the endpoints need to use credentials issued by a TA of the other endpoint. Moreover, the validation of credentials against TAs can be a significant contribution to processing or time for completion, for example in embedded devices. Performance can be improved by providing the other endpoint with hints about which TAs are supported, or which TAs should be used to verify specific credentials. This document specifies how to transport hints of TAs between EDHOC peers.
 
-EDHOC allows the inclusion of authorization-related information in the External Authorization Data (EAD) message fields, see {{Section 3.8 of RFC9528}}. EAD can be included in any of the four EDHOC messages (EAD_1, EAD_2, EAD_3, EAD_4), providing flexibility and extensibility to the protocol. Its main purpose is to embed authorization-related information directly into the key exchange process, reducing the need for additional message exchanges and simplifying the overall protocol flow. Information about TAs is explicitly mentioned as one example of such authorization-related information, see {{Appendix E of RFC9528}}.
+EDHOC allows authorization-related information in the External Authorization Data (EAD) message fields, see {{Section 3.8 of RFC9528}}. EAD can be included in any of the three mandatory and fourth optional EDHOC messages, providing flexibility and extensibility to the protocol. Its main purpose is to embed authorization-related information directly into the key exchange process, reducing the need for additional message exchanges and optimizing the overall protocol flow. Information about TAs is explicitly mentioned as one example of such authorization-related information, see {{Appendix E of RFC9528}}.
 
 The primary motivation for this specification is to provide hints of TAs for authentication, typically related to Certificate Authorities (CAs), where the TA includes the public key of the CA. The hint is a COSE header parameter intended to facilitate the retrieval of the TA, for example a key identifier (kid) or a hash of an X.509 certificate containing the CA root public key (x5t), see {{ead-item}}. However, the same scheme can be applied to hints about other trusted third parties, such as Verifiers of remote attestation evidence {{RFC9334}} or Time Servers for network time synchronization {{RFC5905}}. This document defines an EDHOC EAD item containing hints about certain type of TAs, and enables the extension to other kind of hints and TAs through the registration of the appropriate IANA parameters.
 
@@ -73,9 +73,9 @@ The primary motivation for this specification is to provide hints of TAs for aut
 
 ## Trust Anchor Purpose
 
-The EAD item defined in {{ead-item}} provides hints to trust anchors for different purposes. {{table-edhoc-ta-hint}} provides the currently defined list of purposes, which is extensible through IANA registry defined in {{iana}}.
+The EAD item defined in {{ead-item}} provides hints to trust anchors for different purposes. {{table-edhoc-ta-hint}} provides the currently defined list of purposes, which is extensible through the IANA registry defined in {{iana}}.
 
-| Label      |  Purpose                                         | Reference    |
+| Label      | Purpose                                          | Reference    |
 | 1          | Trust anchor of EDHOC authentication credential  | [RFC-XXXX]   |
 | 2          | Trust anchor of remote attestation verifier      | [RFC-XXXX]   |
 | 3          | Trust anchor of time server                      | [RFC-XXXX]   |
@@ -106,30 +106,27 @@ ta_hint_map = {
 ~~~~~~~~~~~~~~~~~~~~
 {: #fig-ead-item title="EAD item" artwork-align="left"}
 
-{{table-ta-hint-types}} provides examples COSE header_maps used as TA hint types.
+{{table-ta-hint-types}} provides examples of COSE header_maps used as TA hint types.
 
 
 | TA hint type | CBOR label | CBOR type       | Description                                | Reference                           |
-| kid          | 4          | bstr            | Key identifier                             | [RFC-9052]                       |
-| short kid    | TBD2       | bstr / -24..23  | Short key id, bstr or 1-byte integer       | [RFC-9528]                       |
+| kid          | 4          | bstr            | Key identifier                             | [RFC-9052]                          |
 | c5t          | 22         | COSE_CertHash   | C509 certificate thumbprint                | [draft-ietf-cose-cbor-encoded-cert] |
 | c5u          | 23         | uri             | C509 certificate URI                       | [draft-ietf-cose-cbor-encoded-cert] |
 | x5t          | 34         | COSE_CertHash   | X.509 certificate thumbprint               | [RFC-9360]                          |
 | x5u          | 35         | uri             | X.509 certificate URI                      | [RFC-9360]                          |
-| uuid         | TBD3       | #6.37(bstr)     |  Binary CBOR-encoded UUID                  | [RFC-9562]                          |
+| uuid         | TBD2        | #6.37(bstr)     |  Binary CBOR-encoded UUID                  | [RFC-9562]                          |
 {: #table-ta-hint-types title="EDHOC Trust Anchor hint types" align="center"}
 
-The TA hint type 'short kid' is REQUIRED to be implemented.
+# Authentication Processing {#proc}
 
-Editor's note: Need to register 'short kid' and 'uuid'.
+In EDHOC message_2, the ta_hint_map with label 1 is used in the EAD_2 field to include hints about authentication TAs, i.e. TAs of the Responder's authentication credential AUTH_CRED_R. This hint informs the Initiator about which TAs to prioritize when validating AUTH_CRED_R. For example, if the Initiator’s trust store contains multiple CA/intermediate CA certificates, the Responder can include a hint indicating that the credentials should be validated using a specific TA identified by kid, x5t, x5u, c5t, c5u or UUID.
 
-# Processing {#proc}
-
-In EDHOC message_2, where the Responder sends its credentials, the ead_ta_hint format is used to include TA hints in the EAD_2 field. This hint informs the Initiator about which TAs to prioritize when verifying the Responder's credentials. For example, if the Initiator’s trust store contains multiple CA/intermediate CA certificates, the Responder can include a hint indicating that the credentials should be verified using a specific TA identified by kid, x5t, x5u, c5t, c5u or UUID.
+Similarly for EDHOC message_3 and the TAs of the Initiator's authentication credential AUTH_CRED_I.
 
 ## Example 1
 
-Consider a scenario where the Initiator trusts five CA/intermediate certificates. The Responder, when sending message_2, knows that the Initiator should use the TA identified by kid=`edhoc-noc-ica-2` for verification. The responder includes this hint in EAD_2:
+Consider a scenario where the Initiator trusts five CA/intermediate certificates. The Responder, when sending message_2, knows that the Initiator should use the TA identified by kid=`edhoc-noc-ica-2` for verification. The Responder includes the following EAD item in EAD_2:
 
 ~~~~~~~~~~~~~~~~~~~~
 TBD1, << { 1: { 4: h'6564686F632D6E6F632D6963612D32'}} >>
@@ -141,7 +138,7 @@ If the validation against the TAs specified with the EAD item defined in this sp
 
 ## Example 2
 
-An EDHOC peer may include hints about its supported TAs to inform the other peer about what credentials it can validate. In this example ead_ta_hint contains hints about a TA used with an authentication credential (-1) which is identified by its SHA-256/64 hash (-15) and can be retrieved from a given URI.
+An EDHOC peer may include hints about its supported TAs for authentication by including a ta_hint_map with label -1 in an appropriate EAD field: EAD_1 related to the AUTH_CRED_R and EAD_2 for AUTH_CRED_I. This informs the other peer about what TAs to use in its credentials in the next EDHOC message. In the example below the TA is identified by its SHA-256/64 hash (-15) and the URI from which the root certificate can be retrieved. The EAD item ead_ta_hint could look like this:
 
 ~~~~~~~~~~~~~~~~~~~~
 TBD1, << { -1: { 34: [-15, h'79f2a41b510c1f9b'],
@@ -150,7 +147,7 @@ TBD1, << { -1: { 34: [-15, h'79f2a41b510c1f9b'],
 
 ## Example 3
 
-If both the information about TAs to use for validating the Responder's authentication credential (Example 1) and what TAs to use by the Initiator in its authentication credential (Example 2), then the EAD item ead_ta_hint in the EAD_2 field could look like this:
+In EAD_2, the Responder can include both the information about TAs to use for validating the AUTH_CRED_R (Example 1) and recommended TAs to use for AUTH_CRED_I by the Initiator (Example 2). The EAD item ead_ta_hint could look like this:
 
 ~~~~~~~~~~~~~~~~~~~~
 TBD1, << { 1: { 4: h'6564686F632D6E6F632D6963612D32'}
